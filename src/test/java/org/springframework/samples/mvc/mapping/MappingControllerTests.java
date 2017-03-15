@@ -8,23 +8,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.xpath;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.samples.mvc.AbstractContextControllerTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import javax.servlet.Filter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MappingControllerTests extends AbstractContextControllerTests {
 
 	private MockMvc mockMvc;
 
+	@Autowired
+	private Filter springSecurityFilterChain;
+
 	@Before
 	public void setup() throws Exception {
-		this.mockMvc = webAppContextSetup(this.wac).alwaysExpect(status().isOk()).build();
+		this.mockMvc = webAppContextSetup(this.wac)
+				.addFilters(springSecurityFilterChain)
+				.alwaysExpect(status().isOk()).build();
 	}
 
 	@Test
@@ -34,7 +42,7 @@ public class MappingControllerTests extends AbstractContextControllerTests {
 
 	@Test
 	public void byPathPattern() throws Exception {
-		this.mockMvc.perform(get("/mapping/path/wildcard"))
+		this.mockMvc.perform(get("/mapping/path/wildcard").with(httpBasic("user","password")))
 				.andExpect(content().string("Mapped by path pattern ('/mapping/path/wildcard')"));
 	}
 

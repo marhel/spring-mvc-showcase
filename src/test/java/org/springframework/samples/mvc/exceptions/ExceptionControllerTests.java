@@ -1,5 +1,6 @@
 package org.springframework.samples.mvc.exceptions;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,7 +20,9 @@ public class ExceptionControllerTests extends AbstractContextControllerTests {
 
 	@Before
 	public void setup() throws Exception {
-		this.mockMvc = webAppContextSetup(this.wac).build();
+		this.mockMvc = webAppContextSetup(this.wac)
+				.apply(springSecurity())
+				.build();
 	}
 
 	@Test
